@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Процессор — это кухня: интерактивная модель</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef4f5;--card:#fff;--ink:#14303b;--mute:#4d6670;--line:#cfdde1;--acc:#0e7c86;--hot:#d64533;--sun:#f2b705;--ok:#2e8b57;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10222a;--card:#17313b;--ink:#e6f1f3;--mute:#9db7bf;--line:#2a4854;--acc:#4fc3cd;--hot:#ff7a66;--sun:#f5c84a;--ok:#5fc98c}}
+:root[data-theme="dark"]{--bg:#10222a;--card:#17313b;--ink:#e6f1f3;--mute:#9db7bf;--line:#2a4854;--acc:#4fc3cd;--hot:#ff7a66;--sun:#f5c84a;--ok:#5fc98c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Onest,system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1,h2{font-family:Unbounded,Onest,sans-serif;line-height:1.15;margin:0}
+h1{font-size:clamp(26px,6vw,38px);font-weight:800}
+h2{font-size:21px;margin-bottom:6px}
+.lead{color:var(--mute);margin:10px 0 0}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:20px}
+.analogy{border-left:4px solid var(--sun);padding:4px 0 4px 12px;margin:10px 0 14px}
+.ctl{display:grid;grid-template-columns:1fr;gap:4px;margin:14px 0}
+.ctl label{display:flex;justify-content:space-between;font-weight:700}
+.ctl small{color:var(--mute)}
+input[type=range]{width:100%;accent-color:var(--acc);min-height:28px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+button,select,input[type=number]{font:inherit;color:var(--ink)}
+.seg button,.btn{border:2px solid var(--acc);background:transparent;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:700}
+.seg button[aria-pressed=true],.btn{background:var(--acc);color:#fff}
+:root:not([data-theme="light"]) .seg button[aria-pressed=true]{color:#06222a}
+button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.kitchen{display:flex;flex-wrap:wrap;gap:6px;font-size:26px;min-height:44px;margin:8px 0}
+.cook{display:inline-flex;flex-direction:column;align-items:center;font-size:12px;line-height:1}
+.cook b{font-size:26px;font-weight:400}
+.bar{height:16px;background:var(--line);border-radius:8px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:8px;transition:width .4s}
+.bar.hot i{background:linear-gradient(90deg,var(--sun),var(--hot))}
+.out{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.out div{background:var(--bg);border-radius:10px;padding:10px}
+.out strong{display:block;font-size:22px;font-family:Unbounded,Onest,sans-serif}
+.note{background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{background:var(--bg)}
+.scroll{overflow-x:auto}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:10px}
+.row label{display:grid;gap:4px;font-weight:700;flex:1;min-width:130px}
+input[type=number],select{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:8px;width:100%}
+details{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px}
+summary{cursor:pointer;font-weight:700}
+.fit{font-weight:700;margin-top:10px}
+.ok{color:var(--ok)}.bad{color:var(--hot)}
+</style>
+</head>
+<body>
+<main>
+<h1>Процессор — это кухня ресторана</h1>
+<p class="lead">Практическая работа №3. Крутите ползунки и смотрите, как меняется «скорость работы». Заказы — это задачи компьютера, повара — это процессор.</p>
+
+<section id="build">
+<h2>1. Собери свой процессор</h2>
+<div class="analogy"><b>Аналогия:</b> ресторан получает 100 заказов. Чем быстрее и многочисленнее повара, тем быстрее всё приготовят.</div>
+
+<div class="seg" role="group" aria-label="Тип нагрузки">
+<button id="m1" aria-pressed="false">Один сложный заказ (как игра)</button>
+<button id="m2" aria-pressed="true">Много заказов сразу (как рендер видео)</button>
+</div>
+
+<div class="ctl"><label for="f">Тактовая частота <span><span id="fv"></span> ГГц</span></label>
+<input id="f" type="range" min="1.5" max="5.5" step="0.1" value="3.5">
+<small>Как быстро двигаются руки одного повара.</small></div>
+
+<div class="ctl"><label for="c">Количество ядер <span id="cv"></span></label>
+<input id="c" type="range" min="1" max="16" step="1" value="6">
+<small>Сколько поваров стоит на кухне. Каждый работает самостоятельно.</small></div>
+
+<div class="ctl"><label for="ht">Потоки (Hyper-Threading / SMT)</label>
+<div class="seg"><button id="t1" aria-pressed="false">1 поток на ядро</button><button id="t2" aria-pressed="true">2 потока на ядро</button></div>
+<small>Повар с двумя руками: пока одна ждёт, пока закипит вода, другая режет овощи. Поваров не стало больше, но простоя меньше.</small></div>
+
+<div class="ctl"><label for="l3">Кэш L3 <span><span id="lv"></span> МБ</span></label>
+<input id="l3" type="range" min="2" max="64" step="2" value="16">
+<small>Рабочий стол повара. Нужное лежит под рукой, и не надо бегать на склад (в оперативную память).</small></div>
+
+<div class="kitchen" id="kit" aria-label="Повара на кухне"></div>
+
+<div class="out">
+<div>Время на 100 заказов<strong id="time"></strong></div>
+<div>Баллы (условные)<strong id="score"></strong></div>
+</div>
+<div class="bar"><i id="sbar"></i></div>
+<div class="note" id="tip"></div>
+</section>
+
+<section id="heat">
+<h2>2. Тепловыделение (TDP) и охлаждение</h2>
+<div class="analogy"><b>Аналогия:</b> чем больше поваров и чем быстрее они работают, тем жарче на кухне. Нужна вытяжка подходящей мощности.</div>
+<p>Для процессора выше: <b>TDP ≈ <span id="tdp"></span> Вт</span></b></p>
+<div class="bar hot"><i id="hbar"></i></div>
+<div class="note" id="cool"></div>
+</section>
+
+<section id="soc">
+<h2>3. Сокет: подойдёт ли процессор к плате?</h2>
+<div class="analogy"><b>Аналогия:</b> розетка и вилка. Евровилка не войдёт в американскую розетку — у неё другая форма ножек.</div>
+<div class="row">
+<label>Процессор<select id="cpuSel"><option value="LGA 1700">Intel Core i5-13400 (LGA 1700)</option><option value="AM5">AMD Ryzen 5 7600X (AM5)</option></select></label>
+<label>Материнская плата<select id="boardSel"><option value="LGA 1700">Плата с сокетом LGA 1700</option><option value="AM5">Плата с сокетом AM5</option></select></label>
+</div>
+<div class="fit" id="fit"></div>
+</section>
+
+<section id="cmp">
+<h2>4. Сравнение двух процессоров</h2>
+<div class="scroll"><table>
+<tr><th>Характеристика</th><th>Intel Core i5-13400</th><th>AMD Ryzen 5 7600X</th></tr>
+<tr><td>Производитель</td><td>Intel</td><td>AMD</td></tr>
+<tr><td>Макс. частота</td><td>до 4,6 ГГц</td><td>до 5,3 ГГц</td></tr>
+<tr><td>Ядра / потоки</td><td>10 / 16</td><td>6 / 12</td></tr>
+<tr><td>Кэш L3</td><td>20 МБ</td><td>32 МБ</td></tr>
+<tr><td>TDP</td><td>65 Вт</td><td>105 Вт</td></tr>
+<tr><td>Сокет</td><td>LGA 1700</td><td>AM5</td></tr>
+<tr><td>Выпуск</td><td>2023, 13-е поколение</td><td>2022, Ryzen 7000</td></tr>
+<tr><td>Цена</td><td colspan="2">смотрите в магазинах — она меняется</td></tr>
+</table></div>
+<p class="lead">Данные ориентировочные: проверьте на сайтах производителей, это часть задания.</p>
+
+<h2 style="margin-top:20px;font-size:18px">Калькулятор разницы (задание 3)</h2>
+<p>Найдите баллы в интернете (например, Geekbench или Cinebench) и введите их:</p>
+<div class="row">
+<label>Процессор 1, баллов<input id="b1" type="number" min="1" placeholder="например 14000"></label>
+<label>Процессор 2, баллов<input id="b2" type="number" min="1" placeholder="например 12000"></label>
+</div>
+<div class="note" id="diff">Введите оба числа.</div>
+<small class="lead">Формула: (больший − меньший) / меньший × 100%.</small>
+</section>
+
+<section id="qa">
+<h2>5. Проверь себя</h2>
+<p>Сначала ответьте сами, потом открывайте подсказку.</p>
+<details><summary>Почему процессор с меньшей частотой может быть быстрее?</summary><p>Скорость зависит не только от частоты: ещё от числа ядер, кэша и архитектуры. Повар с быстрыми руками проиграет трём поварам с большим столом.</p></details>
+<details><summary>Что важнее для игр: ядра или частота?</summary><p>Обычно игры упираются в скорость нескольких ядер, поэтому важна высокая частота и хороший кэш. Но 6–8 ядер уже нужны, поэтому важен баланс.</p></details>
+<details><summary>Зачем процессору кэш-память?</summary><p>Это очень быстрая память внутри процессора для часто нужных данных. Не нужно каждый раз ждать оперативную память.</p></details>
+<details><summary>Как TDP влияет на выбор охлаждения?</summary><p>TDP показывает, сколько тепла надо отвести. Больше ватт — нужен кулер или СЖО мощнее.</p></details>
+<details><summary>Можно ли поставить Intel на плату для AMD?</summary><p>Нет. Сокеты разные (например, LGA 1700 и AM5), физически и электрически не совместимы.</p></details>
+<details><summary>Что означает CPU? Как расшифровывается TDP?</summary><p>CPU — Central Processing Unit, центральный процессор. TDP — Thermal Design Power, расчётная тепловая мощность.</p></details>
+<details><summary>Чем ядро отличается от потока? Какая технология Intel даёт 2 потока на ядро?</summary><p>Ядро — физический «повар», поток — очередь задач, которую он обрабатывает. Технология Intel — Hyper-Threading (у AMD — SMT).</p></details>
+<details><summary>Что показывает бенчмарк-тест?</summary><p>Производительность в баллах по одной и той же программе, чтобы честно сравнивать процессоры.</p></details>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let multi=true,ht=true;
+function setSeg(a,b,on){a.setAttribute('aria-pressed',!on);b.setAttribute('aria-pressed',on)}
+function calc(){
+const f=+$('f').value,c=+$('c').value,l=+$('l3').value;
+$('fv').textContent=f.toFixed(1).replace('.',',');$('cv').textContent=c;$('lv').textContent=l;
+const cacheF=0.85+0.15*Math.min(l,32)/32;
+const eff=multi?c*(ht?1.25:1):1;
+const speed=f*eff*cacheF;
+const time=100/speed*3;
+const score=Math.round(speed*400);
+$('time').textContent=time.toFixed(1).replace('.',',')+' мин';
+$('score').textContent=score;
+$('sbar').style.width=Math.min(100,speed/(5.5*20*1)*100*(multi?1:3.2))+'%';
+let k='';
+for(let i=0;i<c;i++){const busy=multi||i==0;k+=`<span class="cook" style="opacity:${busy?1:.3}"><b>🧑‍🍳</b>${ht?'✋✋':'✋'}</span>`}
+$('kit').innerHTML=k;
+$('tip').textContent=multi?
+'Много заказов: помогают и частота, и ядра, и потоки. Добавьте ядер — время резко упадёт.':
+'Один сложный заказ делает один повар: лишние ядра простаивают (серые), решает частота и кэш. Поэтому для игр важна частота.';
+const tdp=Math.round(15+f*f*c*1.1*(ht?1.1:1));
+$('tdp').textContent=tdp;
+$('hbar').style.width=Math.min(100,tdp/250*100)+'%';
+$('cool').textContent=tdp<=65?'Хватит штатного кулера из комплекта — как обычная вытяжка над плитой.':
+tdp<=130?'Нужен башенный кулер с тепловыми трубками — как мощная кухонная вытяжка.':
+'Нужна жидкостная система охлаждения (СЖО) — как промышленная вентиляция на большой кухне.';
+}
+function fit(){const ok=$('cpuSel').value===$('boardSel').value;
+$('fit').innerHTML=ok?'<span class="ok">✔ Подходит: сокеты совпадают, вилка входит в розетку.</span>':'<span class="bad">✘ Не подходит: разные сокеты ('+$('cpuSel').value+' и '+$('boardSel').value+'). Нужна другая плата или процессор.</span>'}
+function diff(){const a=+$('b1').value,b=+$('b2').value;
+if(!a||!b){$('diff').textContent='Введите оба числа.';return}
+const big=Math.max(a,b),small=Math.min(a,b),p=(big-small)/small*100;
+$('diff').textContent=a===b?'Процессоры одинаковы: разница 0%.':`Процессор ${a>b?1:2} быстрее на ${p.toFixed(1).replace('.',',')} %`}
+$('m1').onclick=()=>{multi=false;setSeg($('m2'),$('m1'),true);calc()};
+$('m2').onclick=()=>{multi=true;setSeg($('m1'),$('m2'),true);calc()};
+$('t1').onclick=()=>{ht=false;setSeg($('t2'),$('t1'),true);calc()};
+$('t2').onclick=()=>{ht=true;setSeg($('t1'),$('t2'),true);calc()};
+['f','c','l3'].forEach(i=>$(i).oninput=calc);
+['cpuSel','boardSel'].forEach(i=>$(i).onchange=fit);
+['b1','b2'].forEach(i=>$(i).oninput=diff);
+calc();fit();
+</script>
+</body>
+</html>
